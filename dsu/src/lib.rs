@@ -94,4 +94,19 @@ mod test {
         }
         false
     }
+
+    #[test]
+    fn test_groups() {
+        let mut dsu = Dsu::new(10);
+        dsu.merge(0, 1);
+        dsu.merge(1, 2);
+        dsu.merge(3, 4);
+        dsu.merge(4, 5);
+        dsu.merge(5, 6);
+        dsu.merge(7, 8);
+        assert_eq!(
+            dsu.groups(),
+            vec![vec![0, 1, 2], vec![3, 4, 5, 6], vec![7, 8], vec![9]]
+        );
+    }
 }
