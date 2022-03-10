@@ -45,7 +45,7 @@ impl<T: Val> FenwickTree<T> {
         let end = match range.end_bound() {
             Included(&s) => s + 1,
             Excluded(&s) => s,
-            Unbounded => 0,
+            Unbounded => self.len,
         };
         start..end
     }
@@ -58,3 +58,41 @@ pub trait Val: Clone + for<'a> AddAssign<&'a Self> + Sub<Output = Self> + Sum<Se
     }
 }
 impl<T: Clone + for<'a> AddAssign<&'a Self> + Sub<Output = Self> + Sum<Self>> Val for T {}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use rand::prelude::*;
+
+    #[test]
+    fn test_random() {
+        let mut rng = thread_rng();
+        for _ in 0..100 {
+            let len = rng.gen_range(1..100);
+            let mut vec = vec![0; len];
+            let mut ft = FenwickTree::<i32>::new(len);
+            for _ in 0..1000 {
+                let i = rng.gen_range(0..len);
+                let x = rng.gen_range(-100..=100);
+                vec[i] += x;
+                ft.add(i, x);
+                let l = rng.gen_range(0..len);
+                let r = rng.gen_range(l + 1..=len);
+                let sum_vec = vec[l..r].iter().sum::<i32>();
+                let sum_ft = ft.sum(l..r);
+                assert_eq!(sum_vec, sum_ft);
+            }
+        }
+    }
+
+    #[test]
+    fn test_range() {
+        let ft = FenwickTree::<i32>::new(10);
+        assert_eq!(ft.range(..), 0..10);
+        assert_eq!(ft.range(..3), 0..3);
+        assert_eq!(ft.range(6..), 6..10);
+        assert_eq!(ft.range(4..7), 4..7);
+        assert_eq!(ft.range(4..=7), 4..8);
+        assert_eq!(ft.range(..=5), 0..6);
+    }
+}
