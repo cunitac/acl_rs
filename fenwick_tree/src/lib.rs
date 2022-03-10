@@ -16,7 +16,6 @@ impl<T: Val> FenwickTree<T> {
         }
     }
     pub fn add(&mut self, mut i: usize, x: T) {
-        assert!((0..self.len).contains(&i));
         i += 1;
         while i <= self.len {
             self.val[i - 1] += &x;
