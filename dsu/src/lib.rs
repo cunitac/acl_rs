@@ -56,3 +56,42 @@ impl Dsu {
         result
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use rand::prelude::*;
+
+    #[test]
+    fn test_random() {
+        let mut rng = thread_rng();
+        for _ in 0..100 {
+            let len = rng.gen_range(1..30);
+            let mut adj = vec![vec![false; len]; len];
+            let mut dsu = Dsu::new(len);
+            for _ in 0..100 {
+                let a = rng.gen_range(0..len);
+                let b = rng.gen_range(0..len);
+                adj[a][b] = true;
+                adj[b][a] = true;
+                dsu.merge(a, b);
+                assert_eq!(dsu.same(a, b), reachable(&adj, a, b));
+            }
+        }
+    }
+
+    fn reachable(adj: &[Vec<bool>], a: usize, b: usize) -> bool {
+        let mut visited = vec![false; adj.len()];
+        let mut stack = vec![a];
+        while let Some(x) = stack.pop() {
+            visited[x] = true;
+            if x == b {
+                return true;
+            }
+            for y in (0..adj.len()).filter(|&y| !visited[y] && adj[x][y]) {
+                stack.push(y);
+            }
+        }
+        false
+    }
+}
