@@ -29,10 +29,10 @@ impl Dsu {
     }
     pub fn leader(&mut self, a: usize) -> usize {
         if self.p[a] < self.len {
-            self.p[a] = self.leader(a);
+            self.p[a] = self.leader(self.p[a]);
             self.p[a]
         } else {
-            self.p[a].wrapping_neg()
+            a
         }
     }
     pub fn size(&mut self, a: usize) -> usize {
